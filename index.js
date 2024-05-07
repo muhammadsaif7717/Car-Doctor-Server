@@ -117,6 +117,7 @@ async function run() {
     //get bookings 
     app.get('/bookings', async (req, res) => {
       console.log(req.query.email);
+      console.log('tok tok token', req.cookies.token)
       let query = {};
       if (req.query?.email) {
         query = { email: req.query.email }
