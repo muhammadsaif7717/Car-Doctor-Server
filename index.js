@@ -9,7 +9,10 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 // custom middleweres
-
+const logger = async (req, res, next) => {
+  console.log('Called', req.host, req.originalUrl)
+  next();
+}
 //middlewere's
 app.use(cors({
   origin: ['http://localhost:5173'],
@@ -115,7 +118,7 @@ async function run() {
     })
 
     //get bookings 
-    app.get('/bookings', async (req, res) => {
+    app.get('/bookings', logger, async (req, res) => {
       console.log(req.query.email);
       console.log('tok tok token', req.cookies.token)
       let query = {};
