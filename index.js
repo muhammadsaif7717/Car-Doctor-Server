@@ -13,6 +13,27 @@ const logger = async (req, res, next) => {
   console.log('Called', req.host, req.originalUrl)
   next();
 }
+
+const verifyToken = async (req, res, next) => {
+  const token = req.cookies?.token;
+  console.log('Value of the token in middlewere',token)
+  if (!token) {
+    return res.status(401).send({ message: 'not unauthorized' })
+  }
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      console.log(err)
+      return res.status(401).send({ message: 'unauthorized' })
+    }
+    console.log('value in the token', decoded);
+    req.user=decoded;
+    next();
+  })
+}
+
+
+
+
 //middlewere's
 app.use(cors({
   origin: ['http://localhost:5173'],
@@ -118,9 +139,10 @@ async function run() {
     })
 
     //get bookings 
-    app.get('/bookings', logger, async (req, res) => {
+    app.get('/bookings', logger,verifyToken, async (req, res) => {
       console.log(req.query.email);
-      console.log('tok tok token', req.cookies.token)
+      // console.log('tok tok token', req.cookies.token)
+      console.log('user in the valid token',req.user)
       let query = {};
       if (req.query?.email) {
         query = { email: req.query.email }
